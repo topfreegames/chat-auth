@@ -1,28 +1,33 @@
 package chatauth
 
 type (
-	userAuthUpdater struct {
-		Set userAuth `bson:"$set"`
+	// UserAuthUpdater is the user updater query
+	UserAuthUpdater struct {
+		Set UserAuth `bson:"$set"`
 	}
 
-	userAuth struct {
+	// UserAuth holds info to save on storage
+	UserAuth struct {
 		Username string `bson:"username"`
 		Password string `bson:"password"`
 		Salt     string `bson:"salt"`
 	}
 
-	userTopicUpdater struct {
+	// UserTopicUpdater is the user+room updater query
+	UserTopicUpdater struct {
 		Username string   `bson:"username"`
 		PubSub   []string `bson:"pubsub"`
 	}
 )
 
 type (
-	userSelector struct {
+	// UserSelector is the select query by username
+	UserSelector struct {
 		Username string `bson:"username"`
 	}
 
-	userRoomSelector struct {
+	// UserRoomSelector is the select query by username and room
+	UserRoomSelector struct {
 		Username string `bson:"username"`
 		PubSub   string `bson:"pubsub"`
 	}

@@ -21,7 +21,7 @@ func main() {
 		panic(err)
 	}
 
-	auth := chatauth.NewChatAuth(mongoStorage, configPrefix, config)
+	auth := chatauth.NewChatAuth(mongoStorage, nil, configPrefix, config)
 
 	var (
 		ctx  = context.Background()
