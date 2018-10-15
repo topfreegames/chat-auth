@@ -1,6 +1,6 @@
 mongo:
   url: mongodb://localhost:27017
-  user: user
-  pass: pass
+  user: '' 
+  pass: '' 
   database: chat
   connectionTimeout: 1s

@@ -5,9 +5,8 @@ import "context"
 // Storage has methods to access db storage
 // or any other system to store users
 type Storage interface {
-	Upsert(context.Context, *Query) error
-	BulkUpsert(context.Context, []*Query) error
-	Remove(ctx context.Context, selector interface{}) error
+	Upsert(ctx context.Context, collection string, q *Query) error
+	Remove(ctx context.Context, collection string, selector interface{}) error
 }
 
 // Query contains a selector object and a

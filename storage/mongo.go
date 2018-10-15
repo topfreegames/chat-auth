@@ -31,16 +31,27 @@ func NewMongoStorage(
 }
 
 // Upsert upserts on mongo
-func (m *MongoStorage) Upsert(ctx context.Context, q *chatauth.Query) error {
-	return nil
-}
+func (m *MongoStorage) Upsert(
+	ctx context.Context,
+	collection string,
+	q *chatauth.Query,
+) error {
+	coll, session := m.client.WithContext(ctx).C(collection)
+	defer session.Close()
 
-// BulkUpsert bulk upserts on mongo
-func (m *MongoStorage) BulkUpsert(ctx context.Context, qs []*chatauth.Query) error {
-	return nil
+	_, err := coll.Upsert(q.Selector, q.Update)
+	return err
 }
 
 // Remove removes document from mongo
-func (m *MongoStorage) Remove(ctx context.Context, selector interface{}) error {
-	return nil
+func (m *MongoStorage) Remove(
+	ctx context.Context,
+	collection string,
+	selector interface{},
+) error {
+	coll, session := m.client.WithContext(ctx).C(collection)
+	defer session.Close()
+
+	err := coll.Remove(selector)
+	return err
 }
