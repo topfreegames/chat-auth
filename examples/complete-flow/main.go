@@ -15,23 +15,35 @@ func main() {
 		panic(err)
 	}
 
-	mongoStorage, err := storage.NewMongoStorage("mongo", config)
+	configPrefix := "mongo"
+	mongoStorage, err := storage.NewMongoStorage(configPrefix, config)
 	if err != nil {
 		panic(err)
 	}
 
-	chatauth.SetStorage(mongoStorage)
+	auth := chatauth.NewChatAuth(mongoStorage, configPrefix, config)
 
 	var (
 		ctx  = context.Background()
 		user = "user"
 		pass = []byte("pass")
+		room = "room"
 	)
 
-	err = chatauth.RegisterPlayer(ctx, user, pass)
+	err = auth.RegisterPlayer(ctx, user, pass)
 	if err != nil {
 		panic(err)
 	}
+
+	err = auth.Authorize(ctx, user, room)
+	if err != nil {
+		panic(err)
+	}
+
+	// err = auth.Unauthorize(ctx, user, room)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	fmt.Println("success")
 }

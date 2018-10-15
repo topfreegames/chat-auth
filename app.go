@@ -1,46 +1,90 @@
 package chatauth
 
-import "context"
+import (
+	"context"
 
-var (
-	storage  Storage
-	userColl = "mqtt_user"
-	aclColl  = "mqtt_acl"
+	"github.com/spf13/viper"
 )
 
-// SetStorage set storage to use to save users and auths
-func SetStorage(str Storage) {
-	storage = str
+// ChatAuth communicates with storage to register
+// players and authorize them in chat
+type ChatAuth struct {
+	storage           Storage
+	userColl, aclColl string
+	gameID            string
 }
 
-// SetUserCollection updates user collection name
-func SetUserCollection(coll string) {
-	userColl = coll
+// NewChatAuth constructs chat auth
+func NewChatAuth(
+	storage Storage,
+	configPrefix string,
+	config *viper.Viper,
+) *ChatAuth {
+	var (
+		userCollKey = configPrefix + ".userColl"
+		aclCollKey  = configPrefix + ".aclColl"
+		gameIDKey   = configPrefix + ".gameId"
+	)
+
+	config.SetDefault(userCollKey, "mqtt_user")
+	config.SetDefault(aclCollKey, "mqtt_acl")
+
+	return &ChatAuth{
+		storage:  storage,
+		userColl: config.GetString(userCollKey),
+		aclColl:  config.GetString(aclCollKey),
+		gameID:   config.GetString(gameIDKey),
+	}
 }
 
-// SetACLCollection updates ACL collection name
-func SetACLCollection(coll string) {
-	aclColl = coll
-}
-
-// RegisterUser registers user on storage
-func RegisterUser(ctx context.Context, user string, password []byte) error {
+// RegisterPlayer registers player on storage
+func (c *ChatAuth) RegisterPlayer(
+	ctx context.Context,
+	user string,
+	password []byte,
+) error {
 	hashedPass, salt, err := hash(password)
 	if err != nil {
 		return err
 	}
 
-	err = storage.Upsert(ctx, userColl, &Query{
-		Selector: map[string]string{
-			"username": user,
+	err = c.storage.Upsert(ctx, c.userColl, &Query{
+		Selector: userSelector{
+			Username: getUser(c.gameID, user),
 		},
-		Update: map[string]interface{}{
-			"$set": userAuth{
-				Username: user,
+		Update: userAuthUpdater{
+			Set: userAuth{
+				Username: getUser(c.gameID, user),
 				Password: hashedPass,
 				Salt:     salt,
 			},
 		},
+	})
+
+	return err
+}
+
+// Authorize authorizes player in room
+func (c *ChatAuth) Authorize(ctx context.Context, user, room string) error {
+	err := c.storage.Upsert(ctx, c.aclColl, &Query{
+		Selector: userRoomSelector{
+			Username: getUser(c.gameID, user),
+			PubSub:   getRoom(c.gameID, room),
+		},
+		Update: userTopicUpdater{
+			Username: getUser(c.gameID, user),
+			PubSub:   []string{getRoom(c.gameID, room)},
+		},
+	})
+
+	return err
+}
+
+// Unauthorize unauthorizes player in room
+func (c *ChatAuth) Unauthorize(ctx context.Context, user, room string) error {
+	err := c.storage.Remove(ctx, c.aclColl, userRoomSelector{
+		Username: getUser(c.gameID, user),
+		PubSub:   getRoom(c.gameID, room),
 	})
 
 	return err

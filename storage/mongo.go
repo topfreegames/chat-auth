@@ -40,6 +40,7 @@ func (m *MongoStorage) Upsert(
 	defer session.Close()
 
 	_, err := coll.Upsert(q.Selector, q.Update)
+
 	return err
 }
 

@@ -1,6 +1,7 @@
 mongo:
   url: mongodb://localhost:27017
-  user: '' 
-  pass: '' 
+  user: ''
+  pass: ''
   database: chat
   connectionTimeout: 1s
+  gameId: game
