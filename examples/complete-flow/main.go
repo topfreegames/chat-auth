@@ -40,10 +40,10 @@ func main() {
 		panic(err)
 	}
 
-	// err = auth.Unauthorize(ctx, user, room)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	err = auth.Unauthorize(ctx, user, room)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println("success")
 }
