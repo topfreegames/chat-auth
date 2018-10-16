@@ -1,5 +1,8 @@
 .PHONY: mocks
 
+setup:
+	@dep ensure
+
 help: Makefile
 	@echo " Choose a command run in "$(PROJECTNAME)":"
 	@echo ""
