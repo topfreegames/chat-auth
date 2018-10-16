@@ -24,10 +24,10 @@ func main() {
 	auth := chatauth.NewChatAuth(mongoStorage, nil, configPrefix, config)
 
 	var (
-		ctx  = context.Background()
-		user = "user"
-		pass = []byte("pass")
-		room = "room"
+		ctx   = context.Background()
+		user  = "user"
+		pass  = []byte("pass")
+		rooms = []string{"room1", "room2", "room3"}
 	)
 
 	err = auth.RegisterPlayer(ctx, user, pass)
@@ -35,12 +35,12 @@ func main() {
 		panic(err)
 	}
 
-	err = auth.Authorize(ctx, user, room)
+	err = auth.Authorize(ctx, user, rooms)
 	if err != nil {
 		panic(err)
 	}
 
-	err = auth.Unauthorize(ctx, user, room)
+	err = auth.Unauthorize(ctx, user, rooms[0:2])
 	if err != nil {
 		panic(err)
 	}

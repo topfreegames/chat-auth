@@ -26,6 +26,20 @@
   version = "v1.4.7"
 
 [[projects]]
+  digest = "1:4b08116de0de75c041bb341686f0b139930f26cb84dfdf7641d435548114181d"
+  name = "github.com/globalsign/mgo"
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram",
+  ]
+  pruneopts = "UT"
+  revision = "113d3961e7311526535a1ef7042196563d442761"
+  version = "r2018.06.15"
+
+[[projects]]
   digest = "1:bc38c7c481812e178d85160472e231c5e1c9a7f5845d67e23ee4e706933c10d8"
   name = "github.com/golang/mock"
   packages = ["gomock"]
@@ -156,7 +170,8 @@
   version = "v1.2.2"
 
 [[projects]]
-  digest = "1:3d6519b40080d5768ee2352a7cffe01fba5a7bd98777ee1fa486d2446ddb886f"
+  branch = "feature/mongo-update"
+  digest = "1:fd9c59ea91c70d63f0289f9934382bad031661f58165bbbda1d674ef3fa54c83"
   name = "github.com/topfreegames/extensions"
   packages = [
     "jaeger",
@@ -165,8 +180,7 @@
     "mongo/interfaces",
   ]
   pruneopts = "UT"
-  revision = "281c8ff08031e084a35bf75297c8a87a90ff33a3"
-  version = "v6.5.1"
+  revision = "54c8b40889116018b10c427888262299d6f95382"
 
 [[projects]]
   digest = "1:ac6f26e917fd2fb3194a7ebe2baf6fb32de2f2fbfed130c18aac0e758a6e1d22"
@@ -267,6 +281,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/globalsign/mgo/bson",
     "github.com/golang/mock/gomock",
     "github.com/spf13/viper",
     "github.com/stretchr/testify/assert",

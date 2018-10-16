@@ -6,7 +6,8 @@ import "context"
 // or any other system to store users
 type Storage interface {
 	Upsert(ctx context.Context, collection string, q *Query) error
-	Remove(ctx context.Context, collection string, selector interface{}) error
+	RemoveAll(ctx context.Context, collection string, selector interface{}) error
+	BulkUpsert(ctx context.Context, collection string, qs []*Query) error
 }
 
 // Query contains a selector object and a

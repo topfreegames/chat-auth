@@ -34,4 +34,15 @@ type (
 		Username string `bson:"username"`
 		PubSub   string `bson:"pubsub"`
 	}
+
+	// UserManyRoomsSelector selects one username and one or more pubsubs
+	UserManyRoomsSelector struct {
+		Username string          `bson:"username"`
+		PubSub   PubSubsSelector `bson:"pubsub"`
+	}
+
+	// PubSubsSelector selects pubsubs in In
+	PubSubsSelector struct {
+		In []string `json:"$in" bson:"$in"`
+	}
 )

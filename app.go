@@ -74,17 +74,23 @@ func (c *ChatAuth) RegisterPlayer(
 }
 
 // Authorize authorizes player in room
-func (c *ChatAuth) Authorize(ctx context.Context, user, room string) error {
-	err := c.storage.Upsert(ctx, c.aclColl, &Query{
-		Selector: UserRoomSelector{
-			Username: getUser(c.gameID, user),
-			PubSub:   getRoom(c.gameID, room),
-		},
-		Update: UserTopicUpdater{
-			Username: getUser(c.gameID, user),
-			PubSub:   []string{getRoom(c.gameID, room)},
-		},
-	})
+func (c *ChatAuth) Authorize(ctx context.Context, user string, rooms []string) error {
+	queries := make([]*Query, len(rooms))
+
+	for idx, room := range rooms {
+		queries[idx] = &Query{
+			Selector: UserRoomSelector{
+				Username: getUser(c.gameID, user),
+				PubSub:   getRoom(c.gameID, room),
+			},
+			Update: UserTopicUpdater{
+				Username: getUser(c.gameID, user),
+				PubSub:   []string{getRoom(c.gameID, room)},
+			},
+		}
+	}
+
+	err := c.storage.BulkUpsert(ctx, c.aclColl, queries)
 
 	return err
 }
@@ -93,29 +99,46 @@ func (c *ChatAuth) Authorize(ctx context.Context, user, room string) error {
 // In case of Mongo, this field must have a index with ttl with expireAfterSeconds=0
 func (c *ChatAuth) AuthorizeWithExpire(
 	ctx context.Context,
-	user, room string,
+	user string,
+	rooms []string,
 	expiresAt time.Time,
 ) error {
-	err := c.storage.Upsert(ctx, c.aclColl, &Query{
-		Selector: UserRoomSelector{
-			Username: getUser(c.gameID, user),
-			PubSub:   getRoom(c.gameID, room),
-		},
-		Update: UserTopicUpdater{
-			Username: getUser(c.gameID, user),
-			PubSub:   []string{getRoom(c.gameID, room)},
-			Expires:  expiresAt,
-		},
-	})
+	queries := make([]*Query, len(rooms))
+	for idx, room := range rooms {
+		queries[idx] = &Query{
+			Selector: UserRoomSelector{
+				Username: getUser(c.gameID, user),
+				PubSub:   getRoom(c.gameID, room),
+			},
+			Update: UserTopicUpdater{
+				Username: getUser(c.gameID, user),
+				PubSub:   []string{getRoom(c.gameID, room)},
+				Expires:  expiresAt,
+			},
+		}
+	}
+
+	err := c.storage.BulkUpsert(ctx, c.aclColl, queries)
 
 	return err
 }
 
 // Unauthorize unauthorizes player in room
-func (c *ChatAuth) Unauthorize(ctx context.Context, user, room string) error {
-	err := c.storage.Remove(ctx, c.aclColl, UserRoomSelector{
+func (c *ChatAuth) Unauthorize(
+	ctx context.Context,
+	user string,
+	rooms []string,
+) error {
+	topicRooms := make([]string, len(rooms))
+	for idx, room := range rooms {
+		topicRooms[idx] = getRoom(c.gameID, room)
+	}
+
+	err := c.storage.RemoveAll(ctx, c.aclColl, UserManyRoomsSelector{
 		Username: getUser(c.gameID, user),
-		PubSub:   getRoom(c.gameID, room),
+		PubSub: PubSubsSelector{
+			In: topicRooms,
+		},
 	})
 
 	return err

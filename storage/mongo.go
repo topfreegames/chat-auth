@@ -44,8 +44,8 @@ func (m *MongoStorage) Upsert(
 	return err
 }
 
-// Remove removes document from mongo
-func (m *MongoStorage) Remove(
+// RemoveAll removes document from mongo
+func (m *MongoStorage) RemoveAll(
 	ctx context.Context,
 	collection string,
 	selector interface{},
@@ -53,6 +53,27 @@ func (m *MongoStorage) Remove(
 	coll, session := m.client.WithContext(ctx).C(collection)
 	defer session.Close()
 
-	err := coll.Remove(selector)
+	_, err := coll.RemoveAll(selector)
+	return err
+}
+
+// BulkUpsert bulk upserts documents on mongo
+func (m *MongoStorage) BulkUpsert(
+	ctx context.Context,
+	collection string,
+	qs []*chatauth.Query,
+) error {
+	coll, session := m.client.WithContext(ctx).C(collection)
+	defer session.Close()
+
+	bulk := coll.Bulk()
+	pairs := make([]interface{}, 0, 2*len(qs))
+	for _, q := range qs {
+		pairs = append(pairs, q.Selector, q.Update)
+	}
+
+	bulk.Upsert(pairs...)
+
+	_, err := bulk.Run()
 	return err
 }

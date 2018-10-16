@@ -31,7 +31,8 @@
 
 [[constraint]]
   name = "github.com/topfreegames/extensions"
-  version = "6.5.1"
+  # version = "6.5.1"
+  branch = "feature/mongo-update"
 
 [prune]
   go-tests = true
