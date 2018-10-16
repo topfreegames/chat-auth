@@ -8,6 +8,7 @@ import (
 
 // ChatAuth communicates with storage to register
 // players and authorize them in chat
+// Implements Interface interface
 type ChatAuth struct {
 	storage           Storage
 	password          Password
