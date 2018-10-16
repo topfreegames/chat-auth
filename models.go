@@ -1,5 +1,7 @@
 package chatauth
 
+import "time"
+
 type (
 	// UserAuthUpdater is the user updater query
 	UserAuthUpdater struct {
@@ -15,8 +17,9 @@ type (
 
 	// UserTopicUpdater is the user+room updater query
 	UserTopicUpdater struct {
-		Username string   `bson:"username"`
-		PubSub   []string `bson:"pubsub"`
+		Username string    `bson:"username"`
+		PubSub   []string  `bson:"pubsub"`
+		Expires  time.Time `bson:"expires,omitempty"`
 	}
 )
 

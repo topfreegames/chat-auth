@@ -5,6 +5,7 @@ package chatauth_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -83,6 +84,40 @@ func TestAuthorize(t *testing.T) {
 
 	auth := chatauth.NewChatAuth(mockStorage, nil, prefix, config)
 	err := auth.Authorize(ctx, user, room)
+	assert.NoError(t, err)
+}
+
+func TestAuthorizeWithExpire(t *testing.T) {
+	t.Parallel()
+
+	var (
+		mockStorage = mocks.NewMockStorage(gomock.NewController(t))
+		ctx         = context.Background()
+		user        = "user"
+		room        = "room"
+		coll        = "mqtt_acl"
+		game        = "game"
+		prefix      = "chat"
+		expiresAt   = time.Now().Add(1 * time.Second)
+	)
+
+	mockStorage.EXPECT().Upsert(ctx, coll, &chatauth.Query{
+		Selector: chatauth.UserRoomSelector{
+			Username: "game:user",
+			PubSub:   "chat/game/room/room",
+		},
+		Update: chatauth.UserTopicUpdater{
+			Username: "game:user",
+			PubSub:   []string{"chat/game/room/room"},
+			Expires:  expiresAt,
+		},
+	})
+
+	config := viper.New()
+	config.SetDefault("chat.gameId", game)
+
+	auth := chatauth.NewChatAuth(mockStorage, nil, prefix, config)
+	err := auth.AuthorizeWithExpire(ctx, user, room, expiresAt)
 	assert.NoError(t, err)
 }
 

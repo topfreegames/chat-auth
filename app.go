@@ -2,6 +2,7 @@ package chatauth
 
 import (
 	"context"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -82,6 +83,28 @@ func (c *ChatAuth) Authorize(ctx context.Context, user, room string) error {
 		Update: UserTopicUpdater{
 			Username: getUser(c.gameID, user),
 			PubSub:   []string{getRoom(c.gameID, room)},
+		},
+	})
+
+	return err
+}
+
+// AuthorizeWithExpire authorizes player in room and add an expires field
+// In case of Mongo, this field must have a index with ttl with expireAfterSeconds=0
+func (c *ChatAuth) AuthorizeWithExpire(
+	ctx context.Context,
+	user, room string,
+	expiresAt time.Time,
+) error {
+	err := c.storage.Upsert(ctx, c.aclColl, &Query{
+		Selector: UserRoomSelector{
+			Username: getUser(c.gameID, user),
+			PubSub:   getRoom(c.gameID, room),
+		},
+		Update: UserTopicUpdater{
+			Username: getUser(c.gameID, user),
+			PubSub:   []string{getRoom(c.gameID, room)},
+			Expires:  expiresAt,
 		},
 	})
 
