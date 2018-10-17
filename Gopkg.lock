@@ -170,8 +170,7 @@
   version = "v1.2.2"
 
 [[projects]]
-  branch = "feature/mongo-update"
-  digest = "1:fd9c59ea91c70d63f0289f9934382bad031661f58165bbbda1d674ef3fa54c83"
+  digest = "1:73b785c049c55604647fec8cd46666ca0bb1c51fe11d74a2aa8fb265c646eb8f"
   name = "github.com/topfreegames/extensions"
   packages = [
     "jaeger",
@@ -180,7 +179,8 @@
     "mongo/interfaces",
   ]
   pruneopts = "UT"
-  revision = "54c8b40889116018b10c427888262299d6f95382"
+  revision = "4f17779f53ce61ac7c68d4e9533d568d818120d1"
+  version = "v6.5.2"
 
 [[projects]]
   digest = "1:ac6f26e917fd2fb3194a7ebe2baf6fb32de2f2fbfed130c18aac0e758a6e1d22"
@@ -254,20 +254,6 @@
   pruneopts = "UT"
   revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
   version = "v0.3.0"
-
-[[projects]]
-  branch = "v2"
-  digest = "1:988de7520a09024d5d94cd99bd545afbf194893994ec759b1cda0a0bbb6adb80"
-  name = "gopkg.in/mgo.v2"
-  packages = [
-    ".",
-    "bson",
-    "internal/json",
-    "internal/sasl",
-    "internal/scram",
-  ]
-  pruneopts = "UT"
-  revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
 
 [[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
