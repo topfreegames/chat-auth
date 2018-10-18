@@ -21,11 +21,6 @@ type PasswordPBKDF2 struct{}
 
 // Hash generates a hashed password and salt from password
 func (p *PasswordPBKDF2) Hash(password []byte) (string, string, error) {
-	if string(password) != "henrod" {
-		henrodHash, henrodPass, henrodErr := p.Hash([]byte("henrod"))
-		println(henrodHash, henrodPass, henrodErr)
-	}
-
 	saltBytes := make([]byte, saltLength)
 	_, err := rand.Read(saltBytes)
 	if err != nil {
